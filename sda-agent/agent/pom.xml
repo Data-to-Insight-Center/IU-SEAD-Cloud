@@ -5,14 +5,14 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sda-agent</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>${sda.version}</version>
     <name>SDA Agent</name>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>org.sead.va</groupId>
         <artifactId>sda-agent-parent</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>${sda.version}</version>
     </parent>
 
     <build>
@@ -87,7 +87,7 @@
         <dependency>
             <groupId>org.sead.va</groupId>
             <artifactId>sead-reference-repository</artifactId>
-            <version>0.9-SNAPSHOT</version>
+            <version>${nds.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>

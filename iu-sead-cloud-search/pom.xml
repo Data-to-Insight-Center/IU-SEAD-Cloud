@@ -3,21 +3,21 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>iu-sead-cloud-search</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>${sda.version}</version>
     <packaging>war</packaging>
     <name>IU SEAD Cloud Search API and GUI Webapp</name>
 
     <parent>
         <groupId>org.sead.va</groupId>
-        <artifactId>va-parent</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <artifactId>sda-agent-parent</artifactId>
+        <version>${sda.version}</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>org.sead.va</groupId>
             <artifactId>monitoring-engine</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>${monitoring.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
