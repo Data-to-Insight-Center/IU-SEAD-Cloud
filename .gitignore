@@ -16,3 +16,6 @@ Thumbs.db
 *.iml
 *.ipr
 *.iws
+
+**/bin
+**/sda-agent.zip
