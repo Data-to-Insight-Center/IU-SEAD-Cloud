@@ -24,7 +24,7 @@
 <div id="wrapper" align = "center">
     <div style="display : inline-block;padding: 15px 45px 15px 45px;" class="container">
         <div>
-            <a href="https://www.indiana.edu/" target="_blank"><img align="left" src="img/iu-logo.jpg" style="width: 30%;height: 30%;"></a>
+            <a href="https://www.indiana.edu/" target="_blank"><img align="left" src="img/iu-logo.png" style="width: 30%;height: 30%;"></a>
         </div>
         <div>
             <a href="http://sead-data.net/" target="_blank"><img align="right" src="img/sead-logo.png" style="width: 45%;height: 45%;"></a>
@@ -55,7 +55,7 @@
 <div id="wrapper" align = "center">
     <div style="display : inline-block;padding: 15px 45px 15px 45px;" class="container">
         <div>
-            <a href="https://www.indiana.edu/" target="_blank"><img align="left" src="img/iu-logo.jpg" style="width: 30%;height: 30%;"></a>
+            <a href="https://www.indiana.edu/" target="_blank"><img align="left" src="img/iu-logo.png" style="width: 30%;height: 30%;"></a>
         </div>
         <div>
             <a href="http://sead-data.net/" target="_blank"><img align="right" src="img/sead-logo.png" style="width: 45%;height: 45%;"></a>
