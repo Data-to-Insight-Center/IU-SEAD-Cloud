@@ -110,6 +110,7 @@ public class SynchronizedReceiverRunnable implements Runnable {
         BagGenerator bg;
         C3PRPubRequestFacade ro = new C3PRPubRequestFacade(roId, PropertiesReader.properties);
         bg = new BagGenerator(ro);
+        bg.setLinkRewriter(new SDALinkRewriter(PropertiesReader.landingPage));
 
         SFTP sftp = new SFTP();
         OutputStream ftpOS = sftp.openOutputStream(BagGenerator.getValidName(roId), ".zip");

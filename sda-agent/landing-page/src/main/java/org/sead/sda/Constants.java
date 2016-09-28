@@ -26,7 +26,8 @@ public class Constants {
     public static String sdaHost;
     public static String sdaUser;
     public static String sdaPassword;
-    public static String sdaPath;
+    public static String sdaTestPath;
+    public static String sdaProdPath;
     public static String allResearchObjects;
     public static String landingPage;
     public static String pdtURL;
@@ -51,7 +52,8 @@ public class Constants {
         sdaHost = properties.getProperty("sftp.host");
         sdaUser = properties.getProperty("sftp.user");
         sdaPassword = properties.getProperty("sftp.pass");
-        sdaPath = properties.getProperty("sda.path");
+        sdaTestPath = properties.getProperty("sda.test.path");
+        sdaProdPath = properties.getProperty("sda.prod.path");
         allResearchObjects = properties.getProperty("all.research.objects");
         landingPage = properties.getProperty("landing.page");
         pdtURL = properties.getProperty("pdt.url");

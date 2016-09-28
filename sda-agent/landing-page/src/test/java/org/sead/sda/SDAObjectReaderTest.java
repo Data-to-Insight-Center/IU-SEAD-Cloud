@@ -24,7 +24,7 @@ public class SDAObjectReaderTest extends TestCase {
 
         Sftp sftp = new Sftp();
         String bgName = "A short name";
-        String target = Constants.sdaPath + bgName ;
+        String target = Constants.sdaProdPath + bgName ;
         if (sftp.doesFileExist(target)) {
             System.out.println("File exists!!!");
             Stat stat = new Stat();

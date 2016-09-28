@@ -62,26 +62,8 @@ public class LandingPage extends HttpServlet {
                 tag = request.getRequestURI().split("/sda/list=")[1];
             }
 
-            // here we check whether the BagIt zip file for this RO exists in SDA
-            SFTP sftp = new SFTP();
-            String bagName = getBagNameFromId(tag);
-            if (sftp.doesFileExist(Constants.sdaPath + bagName + "/" + bagName + ".zip")) {
-                System.out.println("Bag Exists in SDA...");
-                request.setAttribute("bagExists", "true");
-            }
-            sftp.disConnectSessionAndChannel();
-
-            request.setAttribute("obTag", tag);
-            request.setAttribute("landingPageUrl", Constants.landingPage);
-
-            String keyList_cp = "@id|status|message|preferences";
-
-            String keyList_ore = "keyword|contact|creator|publication date|title|abstract|license|is version of|similarto|title|describes|@context|aggregates|has part|identifier|label|size";
-            //
-
-            keyMapList = new HashMap<String, String>();
-
             Shimcalls shim = new Shimcalls();
+
             // Fix: accessing RO from c3pr here is wrong. we have to access the ore map in the
             // published package and read properties from that.
             JSONObject cp = shim.getResearchObject(tag);
@@ -96,8 +78,24 @@ public class LandingPage extends HttpServlet {
             request.setAttribute("roExists", "true");
             SeadMon.addLog(MonConstants.Components.LANDING_PAGE, tag, MonConstants.EventType.ACCESS);
 
+            String keyList_cp = "@id|status|message|preferences";
+            String keyList_ore = "keyword|contact|creator|publication date|title|abstract|license|is version of|similarto|title|describes|@context|aggregates|has part|identifier|label|size";
+
+            keyMapList = new HashMap<String, String>();
             keyMap(cp, keyList_cp);
 
+            String sdaPath = getSDAPath(cp);
+            // here we check whether the BagIt zip file for this RO exists in SDA
+            SFTP sftp = new SFTP();
+            String bagName = getBagNameFromId(tag);
+            if (sftp.doesFileExist(sdaPath + bagName + "/" + bagName + ".zip")) {
+                System.out.println("Bag Exists in SDA...");
+                request.setAttribute("bagExists", "true");
+            }
+            sftp.disConnectSessionAndChannel();
+
+            request.setAttribute("obTag", tag);
+            request.setAttribute("landingPageUrl", Constants.landingPage);
 
             shim.getObjectID(cp, "@id");
             String oreUrl = shim.getID();
@@ -281,11 +279,13 @@ public class LandingPage extends HttpServlet {
                 return;
             }
 
+            String sdaPath = getSDAPath(ro);
+
             SFTP sftp = new SFTP();
             String bgName = getBagNameFromId(title);
-            String target = Constants.sdaPath + bgName + "/" + bgName + ".zip";
+            String target = sdaPath + bgName + "/" + bgName + ".zip";
             if (!sftp.doesFileExist(target)) {
-                target = Constants.sdaPath + title + "/" + title + ".tar";
+                target = sdaPath + title + "/" + title + ".tar";
             }
 
             System.out.println("title "+title);
@@ -325,7 +325,7 @@ public class LandingPage extends HttpServlet {
                 }else{
                     //download individual files
                     if (target.contains(".tar")){
-                        System.out.println("SDA download path: " + Constants.sdaPath + newURL);
+                        System.out.println("SDA download path: " + sdaPath + newURL);
                         TarArchiveInputStream myTarFile = new TarArchiveInputStream(inStream);
 
                         TarArchiveEntry entry = null;
@@ -344,7 +344,7 @@ public class LandingPage extends HttpServlet {
                         }
                         myTarFile.close();
                     }else{
-                        System.out.println("SDA download path: " + Constants.sdaPath + bgName+"/"+bgName+".zip/"+bgName+"/"+newURL.substring(newURL.indexOf("/")+1));
+                        System.out.println("SDA download path: " + sdaPath + bgName+"/"+bgName+".zip/"+bgName+"/"+newURL.substring(newURL.indexOf("/")+1));
                         BufferedInputStream bin = new BufferedInputStream(inStream);
                         ZipInputStream myZipFile = new ZipInputStream(bin);
 
@@ -466,6 +466,21 @@ public class LandingPage extends HttpServlet {
     private static String getBagNameFromId(String bagId) {
         // Create known-good filename
         return bagId.replaceAll("\\W+", "_");
+    }
+
+    public String getSDAPath(JSONObject obj) {
+
+        String sdaPath = Constants.sdaProdPath;
+
+        if(obj.containsKey("Preferences") && obj.get("Preferences") instanceof org.json.simple.JSONObject) {
+            JSONObject prefObject = (JSONObject) obj.get("Preferences");
+            if(prefObject.containsKey("Purpose") && prefObject.get("Purpose") instanceof String &&
+                    ((String) prefObject.get("Purpose")).equalsIgnoreCase("Testing-Only")) {
+                sdaPath = Constants.sdaTestPath;
+            }
+        }
+
+        return sdaPath;
     }
 
     private boolean isRORestricted(JSONObject preferences) {
