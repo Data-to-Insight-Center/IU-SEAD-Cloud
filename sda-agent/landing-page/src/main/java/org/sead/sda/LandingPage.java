@@ -97,7 +97,8 @@ public class LandingPage extends HttpServlet {
             request.setAttribute("obTag", tag);
             request.setAttribute("landingPageUrl", Constants.landingPage);
 
-            shim.getObjectID(cp, "@id");
+//            shim.getObjectID(cp, "@id");
+            shim.extractAggregationID(cp);
             String oreUrl = shim.getID();
             JSONObject oreFile = shim.getResearchObjectORE(oreUrl);
             keyMap(oreFile, keyList_ore);
@@ -234,6 +235,7 @@ public class LandingPage extends HttpServlet {
                         }
                     }catch(Exception e){
                         System.err.println("Landing Page OREmap error: inaccurate keys");
+                        e.printStackTrace();
                     }
 
                 }
@@ -249,7 +251,7 @@ public class LandingPage extends HttpServlet {
             RequestDispatcher dispatcher = request.getRequestDispatcher("/ro.jsp");
             dispatcher.forward(request, response);
 
-        } else if (!request.getRequestURI().contains("bootstrap")){
+        } else if (!request.getRequestURI().contains("bootstrap") && !request.getRequestURI().contains("sda/img")){
 
             // collection title is the last part of the request URI
             String requestURI = request.getRequestURI();

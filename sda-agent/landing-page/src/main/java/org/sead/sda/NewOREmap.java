@@ -80,13 +80,13 @@ public class NewOREmap {
 		JSONObject output = new JSONObject();
 
 		output.put("Folder", describe.get(keyMapList.get("Title".toLowerCase())));			
-		output.put("aggregates", hasPart(aggregate, part, 0, aggregate.size()-1));
-		
+//		output.put("aggregates", hasPart(aggregate, part, 0, aggregate.size()-1));
+		output.put("aggregates", processParts(aggregate, part));
+
 		return output;
 	}	
 	
-
-	
+	@Deprecated
 	public JSONArray hasPart(JSONArray agg, List part, int location, int stop){
 		JSONArray example = new JSONArray();
 		
@@ -116,6 +116,33 @@ public class NewOREmap {
 		
 		return example;
 		
+	}
+
+	public JSONArray processParts(JSONArray agg, List parentParts) {
+		JSONArray partsTree = new JSONArray();
+		Object[] list = agg.toArray();
+
+		for (Object object : list) {
+			JSONObject listItem = (JSONObject) object;
+			if (parentParts.contains(listItem.get(keyMapList.get("Identifier".toLowerCase())))) {
+				if (listItem.containsKey(keyMapList.get("Has Part".toLowerCase()))) {
+					// if the aggregate item has "Has Parts" element, it represents a collection
+					List newParts = (List) listItem.get(keyMapList.get("Has Part".toLowerCase()));
+					JSONObject collection = new JSONObject();
+					collection.put("Folder", listItem.get(keyMapList.get("Title".toLowerCase())));
+					collection.put("content", processParts(agg, newParts));
+					partsTree.add(collection);
+				} else {
+					// if the aggregate item doesn't have "Has Parts" element, it represents a file
+					JSONObject oneItem = new JSONObject();
+					oneItem.put("Title", listItem.get(keyMapList.get("Label".toLowerCase())));
+					oneItem.put("Size", listItem.get(keyMapList.get("Size".toLowerCase())));
+					partsTree.add(oneItem);
+				}
+			}
+		}
+
+		return partsTree;
 	}
 
 }

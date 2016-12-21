@@ -127,7 +127,14 @@ public class Shimcalls {
         }
     }
 
-
+    public void extractAggregationID(JSONObject ro) {
+        if (ro.containsKey("Aggregation")) {
+            JSONObject aggregation = (JSONObject) ro.get("Aggregation");
+            if (aggregation.containsKey("@id")) {
+                this.output = aggregation.get("@id").toString();
+            }
+        }
+    }
 
     public String getID() {
         return this.output;
