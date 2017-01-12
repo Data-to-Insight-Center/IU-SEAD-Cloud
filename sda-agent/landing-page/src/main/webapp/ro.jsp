@@ -47,7 +47,13 @@
 <%
     } else {
     Map<String, List<String>> properties = (Map<String, List<String>>) request.getAttribute("roProperties");
-	Map<String, String> downloadList = (Map<String, String>) request.getAttribute("downloadList");
+    List<String> abs = properties.get("Abstract");
+    // replace all line feeds with html </br>
+    if (abs != null && abs.size() > 0) {
+        String absString = abs.get(0);
+        abs.set(0, absString.replaceAll("\n", "</br>"));
+    }
+    Map<String, String> downloadList = (Map<String, String>) request.getAttribute("downloadList");
 	Map<String, String> linkedHashMap = (Map<String, String>) request.getAttribute("linkedHashMap");
 	String tag = (String) request.getAttribute("obTag");
 %>
@@ -142,7 +148,14 @@
                                     <% continue;
                                 }
                                 %>
-                                
+
+                                <% if (key.equals("Abstract")) { %>
+                                    <div style="float: left;max-height:350px;overflow-y: auto;">
+                                        <%= val%>
+                                    </div>
+                                <%  continue;
+                                    } %>
+
                                 <%
                                     if (val.startsWith("http")) {
                                 %>
