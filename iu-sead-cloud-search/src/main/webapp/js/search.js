@@ -36,7 +36,7 @@ function myFunction(response) {
 
 		for(var i = 0; i < arr.length; i++) {
 			var creator_results = Array();
-			var creator= arr[i].Creator;
+			var creator= arr[i].CreatorName;
 			var new_creator = "";
 			if($.isArray(creator)) {
 				for (var c=0; c < creator.length; c++){
@@ -71,7 +71,7 @@ function myFunction(response) {
 			} else {
 				new_abstract += abstract;
 			}
-			var new_abstract_out = new_abstract;
+			var new_abstract_out = '<div style="float: left;max-height:350px;overflow-y: auto;">' + fixAbstract(new_abstract) + '</div>';
 
 			var title= arr[i].Title;
 			var identifier= arr[i].Identifier;
