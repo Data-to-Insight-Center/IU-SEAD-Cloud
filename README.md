@@ -1,4 +1,4 @@
-IU-SEAD-Cloud : repository deprecated Fall 2016. See component services
+IU-SEAD-Cloud 
 ============
 
 Steps to build:
