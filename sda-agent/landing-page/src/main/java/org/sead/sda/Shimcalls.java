@@ -147,6 +147,7 @@ public class Shimcalls {
             URL url = new URL(url_string);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("HEAD");
+            conn.setConnectTimeout(200);
 
             if (conn.getResponseCode() == 200) {
                 //throw new RuntimeException("Failed : Live data links isn't existed : "
@@ -158,7 +159,7 @@ public class Shimcalls {
 
             URL urlCon = new URL(url_string);
             URLConnection con = urlCon.openConnection();
-            con.setConnectTimeout(5000);
+            con.setConnectTimeout(200);
             InputStream inputStream = con.getInputStream();
 
             // Read in the first byte from the url.
@@ -169,7 +170,7 @@ public class Shimcalls {
             if (length == 1) {
                 return true;
             } else {
-                throw new RuntimeException("Failed : Live data links isn't existed : " + url_string);
+                throw new RuntimeException("Failed : Live data links don't exist: " + url_string);
             }
 
         } catch (Exception e) {

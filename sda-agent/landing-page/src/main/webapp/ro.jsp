@@ -120,6 +120,28 @@
                             	}
 								%>
 
+                                <% if(key.equals("Live Data Links")) { %>
+                                <div style="float: left;width:62%;word-wrap: break-word;"><%
+                                    if (val.startsWith("http")) {
+                                %>
+                                    <a href="<%= val%>"><%= val%></a>
+                                    <%
+                                    } else {
+                                    %>
+                                    <%= val%>
+                                    <%
+                                        }
+                                        if(count != vals.size()) {
+                                    %>
+                                    </br>
+                                        <%
+                                    }
+                                %></a></div>
+                                <div style="float:right;width:36%;valign:top;font-size:11.5px;color:#757575;"><b><i>(Note: While the live copy and/or the Project Space may be access controlled, and may not exist as long as this published version, you can explore these links to see if updated information or related data publications exist)</b></i></div>
+                                <% continue;
+                                }
+                                %>
+
                                 <%if(key.equals("Creator") || key.equals("Contact")) { %>
                                     <div style="float: left;width:62%;word-wrap: break-word;">
                                 <%

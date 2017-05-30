@@ -162,11 +162,15 @@ public class LandingPage extends HttpServlet {
             }
             if (liveCopy != null) {
                 List<String> liveCopyList = new ArrayList<String>();
-                if (shim.validUrl(liveCopy)){
-                    liveCopyList.add(liveCopy);
-                }else{
-                    liveCopyList.add("Not Available");
-                }
+                liveCopyList.add(liveCopy);
+                // By Isuru: Live data links are not guaranteed to exist because those could be removed
+                // after some time. Therefore validating them is not necessary. We just display the live links
+                // on the landing page with a note indicating the possibility of a broken link.
+//                if (shim.validUrl(liveCopy)){
+//                    liveCopyList.add(liveCopy);
+//                }else{
+//                    liveCopyList.add("Not Available");
+//                }
                 roProperties.put("Live Data Links", liveCopyList);
             }
 
