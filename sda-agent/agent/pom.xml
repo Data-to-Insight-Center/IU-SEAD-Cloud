@@ -5,14 +5,14 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sda-agent</artifactId>
-    <version>${sda.version}</version>
+    <version>${iu.sead.cloud.version}</version>
     <name>SDA Agent</name>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>org.sead.va</groupId>
         <artifactId>sda-agent-parent</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>${iu.sead.cloud.version}</version>
     </parent>
 
     <build>

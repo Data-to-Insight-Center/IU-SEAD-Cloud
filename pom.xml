@@ -4,10 +4,10 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>sda-agent-parent</artifactId>
     <groupId>org.sead.va</groupId>
-    <version>${sda.version}</version>
-    <name>SEAD SDA Agent root pom</name>
+    <artifactId>iu-sead-cloud-parent</artifactId>
+    <version>${iu.sead.cloud.version}</version>
+    <name>IU SEAD Cloud</name>
     <packaging>pom</packaging>
 
 
@@ -17,7 +17,7 @@
     </modules>
 
     <properties>
-        <sda.version>2.0.0-SNAPSHOT</sda.version>
+        <iu.sead.cloud.version>2.0.0-SNAPSHOT</iu.sead.cloud.version>
         <monitoring.version>2.0.0-SNAPSHOT</monitoring.version>
         <nds.version>0.9-SNAPSHOT</nds.version>
     </properties>
