@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import org.sead.nds.repository.C3PRPubRequestFacade;
 import org.sead.sda.agent.apicalls.NewOREmap;
 import org.sead.sda.agent.apicalls.Shimcalls;
 import org.sead.sda.agent.driver.ROPublisher;
@@ -37,7 +38,6 @@ public class SynchronizedReceiverRunnable implements Runnable {
         while (true) {
             Shimcalls call = new Shimcalls();
             JSONArray newResearchObjects = call.getResearchObjectsList();
-            log.info("Checking for new Research Objects...");
 
             for (Object item : newResearchObjects.toArray()) {
                 try {
@@ -48,7 +48,6 @@ public class SynchronizedReceiverRunnable implements Runnable {
                     if (identifier == null) {
                         throw new Exception("SDA Agent : Cannot get Identifier of RO");
                     }
-                    // log.info("\nResearch Object found, ID: " + identifier);
 
                     if (!isAlreadyPublished(researchObject)) {
                         log.info("New Research Object found, ID: " + identifier);
@@ -116,13 +115,9 @@ public class SynchronizedReceiverRunnable implements Runnable {
             throw new Exception("Error while downloading some/all files");
         }
 
-        log.info("Updating status in C3P-R with the PID...");
-        // TODO: enable later
-//        call.updateStatus(C3PRPubRequestFacade.SUCCESS_STAGE, roPublisher.getRoPid(), identifier);
-
-//        FileManager manager = new FileManager();
-//        manager.removeTempFile(rootPath + ".tar");
-//        manager.removeTempFolder(rootPath);
+        log.info("Updating status in C3P-R with the PID: " + roPublisher.getROPid());
+        call.updateStatus(C3PRPubRequestFacade.SUCCESS_STAGE, roPublisher.getROPid(), identifier);
+        roPublisher.cleanup();
     }
 
     private boolean isAlreadyPublished(JSONObject researchObject) {

@@ -34,23 +34,18 @@ public class ROPublisher {
 
     private static final Logger log = Logger.getLogger(ROPublisher.class);
 
-//    private String userAndpass;
     private ArrayList<String> errorLinks;
     private String rootPath = null;
     private String roPid = null;
 
-    public String getRoPid() {
+    public String getROPid() {
         return roPid;
     }
 
-    //    public ROPublisher(JSONObject ore, org.json.JSONObject prettyOre, String doiUrl, String license) {
     public ROPublisher(JSONObject newORE, JSONObject originalORE) {
-//        this.userAndpass = PropertiesReader.clowderUser + ":" + PropertiesReader.clowderPassword;
 
         this.errorLinks = new ArrayList<String>();
         this.rootPath = createRootFolder(newORE, PropertiesReader.localFileCache);
-
-//        writeOREmap(this.rootPath, prettyOre);
 
         JSONArray aggre = (JSONArray) newORE.get("aggregates");
 
@@ -66,15 +61,15 @@ public class ROPublisher {
 
         // create a new json object to build the description
         org.json.JSONObject roDescription = new org.json.JSONObject();
-        roDescription.append("Title", describes.get("Title"));
-        roDescription.append("Abstract", describes.get("Abstract"));
-        roDescription.append("Creation Date", describes.get("Creation Date"));
-        roDescription.append("Publication Date", describes.get("Publication Date"));
+        roDescription.put("Title", describes.get("Title"));
+        roDescription.put("Abstract", describes.get("Abstract"));
+        roDescription.put("Creation Date", describes.get("Creation Date"));
+        roDescription.put("Publication Date", describes.get("Publication Date"));
         org.json.JSONArray childPids = new org.json.JSONArray();
         for (String pid : pidList) {
             childPids.put(pid);
         }
-        roDescription.append("Child PIDs", childPids);
+        roDescription.put("Child PIDs", childPids);
 
         // write description into a local file
         return writeJSONFile(this.rootPath, roId, roDescription);
@@ -83,21 +78,16 @@ public class ROPublisher {
 
     private String createRootFolder(JSONObject ore, String DummySDADownloadPath) {
         String rootName = ore.get("Folder").toString();
-
         String path = DummySDADownloadPath + File.separator + rootName;
-
         createDirectory(path);
-
         return path;
-
     }
 
 
     private void createDirectory(String path) {
         File newDir = new File(path);
-
         if (newDir.exists()) {
-            System.err.println("Duplicated Folder or not? " + path);
+            log.debug("Directory already exists: " + path);
         } else {
             newDir.mkdirs();
         }
@@ -155,24 +145,26 @@ public class ROPublisher {
         return this.errorLinks;
     }
 
-    public String getRootPath() {
-        return this.rootPath;
+    public void cleanup() {
+        // delete temp files in local cache
+        FileManager manager = new FileManager();
+        manager.removeTempFolder(this.rootPath);
     }
 
 
-    public String writeJSONFile(String rootPath, String roId, org.json.JSONObject ore) {
+    public String writeJSONFile(String rootPath, String roId, org.json.JSONObject jsonObject) {
         String filePath = rootPath + File.separator + roId + ".json";
         try {
-            FileWriter outFile = new FileWriter(filePath, true);
+            FileWriter fileWriter = new FileWriter(filePath, true);
             try {
-                PrintWriter out1 = new PrintWriter(outFile);
+                PrintWriter printWriter = new PrintWriter(fileWriter);
                 try {
-                    out1.append(ore.toString(2));
+                    printWriter.append(jsonObject.toString(2));
                 } finally {
-                    out1.close();
+                    printWriter.close();
                 }
             } finally {
-                outFile.close();
+                fileWriter.close();
             }
         } catch (Exception e) {
             log.error("Error while writing JSON file: " + filePath);

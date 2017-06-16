@@ -11,9 +11,6 @@ import java.io.FileInputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
@@ -21,7 +18,6 @@ public class Util {
 
     private static final Logger log = Logger.getLogger(Util.class);
 
-    private static final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     private static final HandleResolver handleResolver = new HandleResolver();
     // connection string for Azure storage account
     private static final String storageConnectionString = PropertiesReader.azureStorageConnectionString;
@@ -67,10 +63,9 @@ public class Util {
      * Creates a PID for the digital object described by the map of properties
      */
     public static String createPIDForDO(Map<String, String> doProperties, UUID handleSuffix) {
-        log.debug("Assigning PID for: " + doProperties.get("URL"));
+        String dataObjectURL = doProperties.get("URL");
+        log.debug("Assigning PID for: " + dataObjectURL);
         try {
-            System.out.println("Assigning PID for: " + doProperties.get("URL"));
-
             String handleAdminIdentifier = PropertiesReader.handleAdminIdentifier;
             String adminPrivateKeyFile = PropertiesReader.handleAdminKeyFilePath;
             File privateKeyFile = new File(adminPrivateKeyFile);
@@ -82,17 +77,9 @@ public class Util {
             String handleIdentifier = PropertiesReader.handleIdentifierPrefix + handleSuffix;
             String pid = PropertiesReader.handleURLPrefix + handleIdentifier;
 //            String handleIdentifier = "11723.9.test.seadtrain.testdata1";
-            HandleValue pidURL = new HandleValue(1, net.handle.hdllib.Util.encodeString("URL"), net.handle.hdllib.Util.encodeString(doProperties.get("URL")));
+            HandleValue pidURL = new HandleValue(1, net.handle.hdllib.Util.encodeString("URL"), net.handle.hdllib.Util.encodeString(dataObjectURL));
             HandleValue pidKernel = new HandleValue(2, net.handle.hdllib.Util.encodeString(PropertiesReader.strawmanProfileIdentifier),
-                    net.handle.hdllib.Util.encodeString("{" +
-                            "PID:\"" + pid + "\", " +
-                            "RDAKIProfileType:\"" + PropertiesReader.handleURLPrefix + PropertiesReader.strawmanProfileIdentifier + "\", " +
-                            "digitalObjectType:\"" + PropertiesReader.handleURLPrefix + PropertiesReader.strawmanProfileIdentifier + "\", " +
-                            "digitalObjectLocation:\"" + doProperties.get("URL") + "\", " +
-                            "etag:\"" + doProperties.get("etag") + "\", " +
-                            "lastModified:\"" + sdf.format(new Date()) + "\", " + // TODO: get these dates from ORE map
-                            "creationDate:\"" + doProperties.get("creationDate") + "\"" +
-                            "}"));
+                    net.handle.hdllib.Util.encodeString(constructPIDKernelBlob(doProperties, pid)));
             HandleValue[] handleValues = new HandleValue[2];
             handleValues[0] = pidURL;
             handleValues[1] = pidKernel;
@@ -102,7 +89,7 @@ public class Util {
             AbstractResponse response = handleResolver.processRequestGlobally(handleRequest);
             if (response.responseCode == AbstractMessage.RC_SUCCESS) {
                 // pid creation successful
-                System.out.println("Assigned PID: " + pid);
+                log.info("Assigned PID: " + pid + " for File: " + dataObjectURL);
                 return pid;
             } else if (response.responseCode == AbstractMessage.RC_ERROR) {
                 byte values[] = ((ErrorResponse) response).message;
@@ -112,6 +99,18 @@ public class Util {
             log.error("Error while creating PID", e);
         }
         return null;
+    }
+
+    private static String constructPIDKernelBlob(Map<String, String> doProperties, String pid) {
+        org.json.JSONObject kernelJSON = new org.json.JSONObject();
+        kernelJSON.put("PID", pid);
+        kernelJSON.put("RDAKIProfileType", PropertiesReader.handleURLPrefix + PropertiesReader.strawmanProfileIdentifier);
+        kernelJSON.put("digitalObjectType", PropertiesReader.handleURLPrefix + PropertiesReader.strawmanProfileIdentifier); // TODO: correct?
+        kernelJSON.put("digitalObjectLocation", doProperties.get("URL"));
+        kernelJSON.put("etag", doProperties.get("etag"));
+        kernelJSON.put("lastModified", doProperties.get("lastModified"));
+        kernelJSON.put("creationDate", doProperties.get("creationDate"));
+        return kernelJSON.toString();
     }
 
     public static class AzureBlobUploadResult {
