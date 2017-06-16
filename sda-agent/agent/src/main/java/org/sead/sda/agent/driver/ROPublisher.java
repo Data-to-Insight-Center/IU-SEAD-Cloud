@@ -64,6 +64,7 @@ public class ROPublisher {
         roDescription.put("Title", describes.get("Title"));
         roDescription.put("Abstract", describes.get("Abstract"));
         roDescription.put("Creation Date", describes.get("Creation Date"));
+        roDescription.put("Last Modified", describes.get("Last Modified"));
         roDescription.put("Publication Date", describes.get("Publication Date"));
         org.json.JSONArray childPids = new org.json.JSONArray();
         for (String pid : pidList) {
@@ -135,8 +136,8 @@ public class ROPublisher {
         Map<String, String> doProperties = new HashMap<String, String>();
         doProperties.put("URL", uploadResult.getBlobURL());
         doProperties.put("etag", uploadResult.getMd5Checksum());
-        doProperties.put("creationDate", metadata.get("Creation Date").toString()); // TODO: get proper dates
-        doProperties.put("lastModified", metadata.get("Creation Date").toString());
+        doProperties.put("creationDate", metadata.get("Creation Date").toString());
+        doProperties.put("lastModified", metadata.get("Last Modified").toString());
         // create PID and return
         return Util.createPIDForDO(doProperties, UUID.randomUUID());
     }
