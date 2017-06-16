@@ -19,7 +19,7 @@ echo "
 #!/bin/sh
 BUILD=$BUILD
 LIB=$LIB
-" > ./bin/sda-agent.sh
+" > ./bin/iusc-azure-agent.sh
 
 echo '
 
@@ -38,8 +38,8 @@ echo
 
 CP=:$CLASSPATH:$CLASSES:.
 java -classpath $CP org.sead.sda.agent.service.ServiceLauncher $1
-' >> ./bin/sda-agent.sh
-chmod 755 ./bin/sda-agent.sh
+' >> ./bin/iusc-azure-agent.sh
+chmod 755 ./bin/iusc-azure-agent.sh
 
 
 

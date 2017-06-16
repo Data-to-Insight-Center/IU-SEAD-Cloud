@@ -24,24 +24,22 @@ import java.util.Properties;
 
 public class PropertiesReader {
 
-    public static Properties properties;
+    public static String handleAdminIdentifier;
+    public static String handleAdminKeyFilePath;
+    public static String handleAdminKeyFilePassword;
+    public static String handleIdentifierPrefix;
+    public static String handleURLPrefix;
+    public static String strawmanProfileIdentifier;
 
-    public static String sdaHost;
-    public static String sdaUser;
-    public static String sdaPassword;
+    public static String azureStorageConnectionString;
 
-    public static String sdaResearchObjects;
+    public static String iuscAzureNewResearchObjects;
     public static String allResearchObjects;
-    public static String landingPage;
+//    public static String landingPage;
     public static String callDaemons;
-    public static String dummySDA;
-    public static String clowderUser;
-    public static String clowderPassword;
-    public static String sdaPath;
-    public static String packageFormat;
-
-    public static String doiEndpoint;
-    public static String isDoiPermanent;
+    public static String localFileCache;
+//    public static String clowderUser;
+//    public static String clowderPassword;
 
     public static String mongoHost;
     public static int mongoPort;
@@ -59,27 +57,27 @@ public class PropertiesReader {
     }
 
     private static void loadConfigurations(String configPath) throws Exception {
-        properties = new Properties();
+        Properties properties = new Properties();
         InputStream inputStream = new FileInputStream(configPath);
         properties.load(inputStream);
         // read properties
-        sdaHost = properties.getProperty("sftp.host");
-        sdaUser = properties.getProperty("sftp.user");
-        sdaPassword = properties.getProperty("sftp.pass");
-        sdaResearchObjects = properties.getProperty("sda.research.objects");
+        azureStorageConnectionString = properties.getProperty("azure.storage.connection.string");
+        handleAdminIdentifier = properties.getProperty("handle.admin.identifier");
+        handleAdminKeyFilePath = properties.getProperty("handle.admin.key.file.path");
+        handleAdminKeyFilePassword = properties.getProperty("handle.admin.key.file.password");
+        handleIdentifierPrefix = properties.getProperty("handle.identifier.prefix");
+        handleURLPrefix = properties.getProperty("handle.url.prefix");
+        strawmanProfileIdentifier = properties.getProperty("strawman.profile.identifier");
+        iuscAzureNewResearchObjects = properties.getProperty("iusc.azure.new.research.objects");
         allResearchObjects = properties.getProperty("all.research.objects");
-        landingPage = properties.getProperty("landing.page.url");
+//        landingPage = properties.getProperty("landing.page.url");
         callDaemons = properties.getProperty("call.daemons");
-        dummySDA = properties.getProperty("dummy.sda");
-        clowderUser = properties.getProperty("clowder.user");
-        clowderPassword = properties.getProperty("clowder.pass");
-        sdaPath = properties.getProperty("sda.path");
-        packageFormat = properties.getProperty("package.format");
-        doiEndpoint = properties.getProperty("doi.service.url");
-        isDoiPermanent = properties.getProperty("doi.permanent");
+        localFileCache = properties.getProperty("local.cache");
+//        clowderUser = properties.getProperty("clowder.user");
+//        clowderPassword = properties.getProperty("clowder.pass");
         mongoHost = properties.getProperty("mongo.host");
         mongoPort = Integer.parseInt(properties.getProperty("mongo.port", "27017"));
-        agentDBName = properties.getProperty("sda.agent.db.name");
+        agentDBName = properties.getProperty("iusc.azure.agent.db.name");
         roPublishInterval = Integer.parseInt(properties.getProperty("ro.publish.interval.secs"));
         roFetchInterval = Integer.parseInt(properties.getProperty("ro.fetch.interval.secs"));
     }

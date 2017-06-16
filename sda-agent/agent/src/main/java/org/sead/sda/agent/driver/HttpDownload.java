@@ -38,7 +38,8 @@ public class HttpDownload {
 	}
 	
 	
-	public void connection(String fileUrl, String userAndpass, String title){
+//	public void connection(String fileUrl, String userAndpass, String title){
+	public void connection(String fileUrl, String title){
 		try{
 			this.title = title;
 			this.fileUrl = fileUrl;

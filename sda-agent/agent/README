@@ -3,30 +3,20 @@ Please build LandingPage and SEAD-NDS-Repository(https://github.com/Data-to-Insi
 
 Step 1:
 
-Modify sead2/sda-agent/config/config.properties file
-
-need to get correct information for sftp.host, sftp.user, sftp.pass, collection.user and
-collection.pass
-
-write a proper path for 'dummy.sda' that could save the temporary RO files
-
-change 'landing.page.url' to the correct http address
-
-if you don't want to use SDA, you can create a local SDA folder and change ‘SDA’ path.
-
+Set proper values for properties in sead2/sda-agent/config/config.properties file
 
 Step 2:
 
-run build-standalone.sh.
+Run standalone build script
 
 ./build-standalone.sh.
 
-It will help user build project and create a shell script bin/SDA_Agent.sh
+This will create a shell script bin/iusc-azure-agent.sh which can be used to start the agent.
 
 
 Step 3:
 
-Run bin/SDA_Agent.sh to start SDA Agent. You have to provide the 'config.properties' file path as a parameter.
+Run bin/iusc-azure-agent.sh to start IU SEAD Cloud Azure agent. You have to provide the 'config.properties' file path as a parameter.
 
-nohup ./bin/SDA_Agent.sh config/config.properties > log.txt &
+nohup ./bin/iusc-azure-agent.sh config/config.properties > log.txt &
 

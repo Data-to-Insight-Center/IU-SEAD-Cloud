@@ -39,15 +39,8 @@ import org.sead.sda.agent.engine.PropertiesReader;
 
 public class Shimcalls {
 	
-	private String sda_researchobjects;
-	private String cp_researchobject;
 	private String output = null;
 	
-	public Shimcalls(){
-		this.sda_researchobjects = PropertiesReader.sdaResearchObjects;
-		this.cp_researchobject = PropertiesReader.allResearchObjects;
-	}
-
 	public StringBuilder getCalls(String url_string){
 		StringBuilder sb = new StringBuilder();
 		
@@ -87,7 +80,7 @@ public class Shimcalls {
         JSONArray object = new JSONArray();
         JSONParser parser = new JSONParser();
 
-        StringBuilder new_sb = getCalls(sda_researchobjects);
+        StringBuilder new_sb = getCalls(PropertiesReader.iuscAzureNewResearchObjects);
 
         try {
             Object obj = parser.parse(new_sb.toString());
@@ -105,7 +98,7 @@ public class Shimcalls {
         JSONObject object = new JSONObject();
         JSONParser parser = new JSONParser();
 
-        StringBuilder new_sb = getCalls(this.cp_researchobject + "/" + id);
+        StringBuilder new_sb = getCalls(PropertiesReader.allResearchObjects + "/" + id);
         try {
             Object obj = parser.parse(new_sb.toString());
             object = (JSONObject) obj;
@@ -159,7 +152,7 @@ public class Shimcalls {
 	}
 
     public void updateStatus(String stage, String message, String id) {
-        WebResource webResource = Client.create().resource(this.cp_researchobject);
+        WebResource webResource = Client.create().resource(PropertiesReader.allResearchObjects);
         String status = "{\"reporter\":\"sda\", \"stage\":\"" + stage + "\", \"message\":\"" +
                 message.trim() + "\"}";
         System.out.println("Status update JSON: " + status);

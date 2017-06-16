@@ -75,6 +75,7 @@ public class NewOREmap {
 				JSONObject oneItem = new JSONObject();
 				oneItem.put("Title", list_item.get("Label"));
 				oneItem.put("Link", list_item.get("similarTo"));
+				oneItem.put("FullMetadata", list_item);
 				example.add(oneItem);
 				
 			}

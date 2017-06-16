@@ -23,21 +23,10 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import org.sead.nds.repository.BagGenerator;
-import org.sead.nds.repository.C3PRPubRequestFacade;
 import org.sead.sda.agent.apicalls.NewOREmap;
 import org.sead.sda.agent.apicalls.Shimcalls;
-import org.sead.sda.agent.driver.DummySDA;
-import org.sead.sda.agent.driver.FileManager;
-import org.sead.sda.agent.driver.ZipDirectory;
-import org.sead.sda.agent.engine.DOI;
+import org.sead.sda.agent.driver.ROPublisher;
 import org.sead.sda.agent.engine.PropertiesReader;
-import org.sead.sda.agent.engine.SFTP;
-import org.sead.sda.agent.policy.EnforcementResult;
-import org.sead.sda.agent.policy.PolicyEnforcer;
-
-import java.io.BufferedOutputStream;
-import java.io.OutputStream;
 
 public class SynchronizedReceiverRunnable implements Runnable {
 
@@ -47,9 +36,10 @@ public class SynchronizedReceiverRunnable implements Runnable {
 
         while (true) {
             Shimcalls call = new Shimcalls();
-            JSONArray allResearchObjects = call.getResearchObjectsList();
+            JSONArray newResearchObjects = call.getResearchObjectsList();
+            log.info("Checking for new Research Objects...");
 
-            for (Object item : allResearchObjects.toArray()) {
+            for (Object item : newResearchObjects.toArray()) {
                 try {
                     JSONObject researchObject = (JSONObject) item;
                     call.getObjectID(researchObject, "Identifier");
@@ -65,22 +55,18 @@ public class SynchronizedReceiverRunnable implements Runnable {
                         log.info("Starting to publish Research Object...");
 
                         JSONObject publicationRequest = call.getResearchObject(identifier);
-                        // check whether RO adheres to the SDA policy, if not reject
-                        EnforcementResult enforcementResult = PolicyEnforcer.getInstance().isROAllowed(publicationRequest);
-                        if (!enforcementResult.isROAllowed()) {
-                            call.updateStatus(C3PRPubRequestFacade.FAILURE_STAGE, enforcementResult.getC3prUpdateMessage(), identifier);
-                            log.info("Rejected RO: " + identifier + ", message: " + enforcementResult.getC3prUpdateMessage());
-                            continue;
-                        }
-                        log.info("Policy validation passed, id: " + identifier);
 
-                        if ("tar".equals(PropertiesReader.packageFormat.trim())) {
-                            log.error("Tar format is not supported with the latest version of IU SEAD Cloud Agent");
-                            //depositTar(publicationRequest, call, identifier);
-                        } else {
-                            log.info("Generating BagIt..");
-                            depositBag(identifier);
-                        }
+                        // TODO: Finalize the policy for Azure and add it later..
+                        // check whether RO adheres to the SDA policy, if not reject
+//                        EnforcementResult enforcementResult = PolicyEnforcer.getInstance().isROAllowed(publicationRequest);
+//                        if (!enforcementResult.isROAllowed()) {
+//                            call.updateStatus(C3PRPubRequestFacade.FAILURE_STAGE, enforcementResult.getC3prUpdateMessage(), identifier);
+//                            log.info("Rejected RO: " + identifier + ", message: " + enforcementResult.getC3prUpdateMessage());
+//                            continue;
+//                        }
+//                        log.info("Policy validation passed, id: " + identifier);
+
+                        deposit(publicationRequest, call, identifier);
                         log.info("Successfully published Research Object: " + identifier + "\n");
                     }
                 } catch (Exception e) {
@@ -105,35 +91,8 @@ public class SynchronizedReceiverRunnable implements Runnable {
         }
     }
 
-    private void depositBag(String roId) throws Exception {
-        // use the BagGenerator from reference repository code
-        BagGenerator bg;
-        C3PRPubRequestFacade ro = new C3PRPubRequestFacade(roId, PropertiesReader.properties);
-        bg = new BagGenerator(ro);
-        bg.setLinkRewriter(new SDALinkRewriter(PropertiesReader.landingPage));
-
-        SFTP sftp = new SFTP();
-        OutputStream ftpOS = sftp.openOutputStream(BagGenerator.getValidName(roId), ".zip");
-        BufferedOutputStream bufferedOS = new BufferedOutputStream(ftpOS);
-
-        log.info("Depositing RO into SDA as a BagIt Zip archive...");
-        if (bg.generateBag(bufferedOS)) {
-            String doi = ro.getOREMap().getJSONObject("describes").getString("External Identifier");
-            log.info("Updating status in C3P-R with the DOI: " + doi);
-            ro.sendStatus(C3PRPubRequestFacade.SUCCESS_STAGE, doi);
-        } else {
-            log.debug("RO deposit failed, roId: " + roId);
-            ro.sendStatus(C3PRPubRequestFacade.FAILURE_STAGE, "Processing of this request has failed and no further " +
-                    "attempts to process this request will be made. Please contact the repository for further information.");
-        }
-
-        // close output streams and disconnect sftp channel
-        bufferedOS.close();
-        ftpOS.close();
-        sftp.disconnect();
-    }
-
-    private void depositTar(JSONObject pulishObject, Shimcalls call, String identifier) throws Exception {
+    // Deposits each file in the RO into Azure after assigning a PID.
+    private void deposit(JSONObject pulishObject, Shimcalls call, String identifier) throws Exception {
         call.getObjectID(pulishObject, "@id");
         String oreUrl = call.getID();
 
@@ -141,45 +100,29 @@ public class SynchronizedReceiverRunnable implements Runnable {
             throw new Exception("SDA Agent : Cannot get ORE map file of RO");
         }
         log.info("Fetching ORE from: " + oreUrl);
-        JSONObject ore = call.getResearchObjectORE(oreUrl);
-        NewOREmap oreMap = new NewOREmap(ore);
-        JSONObject newOREmap = oreMap.getNewOREmap();
-
-        log.info("Generating DOI...");
-        String target = PropertiesReader.landingPage + "?tag=" + identifier;
-        DOI doi = new DOI(target, ore);
-        String doiUrl = doi.getDoi();
-        if(doiUrl.startsWith("doi:")){
-            doiUrl = doiUrl.replace("doi:", "http://dx.doi.org/");
-        }
-        log.info("DOI: " + doiUrl);
-
+        JSONObject originalORE = call.getResearchObjectORE(oreUrl);
+        NewOREmap oreMap = new NewOREmap(originalORE);
+        JSONObject newORE = oreMap.getNewOREmap();
 
         log.info("Downloading data files...");
-        JSONObject preferences = (JSONObject) pulishObject.get("Preferences");
-        String license = null;
-        if (preferences.containsKey("License")){
-            license = preferences.get("License").toString();
-        }
-        DummySDA dummySDA = new DummySDA(newOREmap, call.getJsonORE(oreUrl), doiUrl, license);
-        if (dummySDA.getErrorLinks().size() > 0) {
+//        JSONObject preferences = (JSONObject) pulishObject.get("Preferences");
+//        String license = null;
+//        if (preferences.containsKey("License")){
+//            license = preferences.get("License").toString();
+//        }
+//        ROPublisher localFileCache = new ROPublisher(newOREmap, call.getJsonORE(oreUrl), doiUrl, license);
+        ROPublisher roPublisher = new ROPublisher(newORE, originalORE);
+        if (roPublisher.getErrorLinks().size() > 0) {
             throw new Exception("Error while downloading some/all files");
         }
 
-        String rootPath = dummySDA.getRootPath();
-        new ZipDirectory(rootPath);
+        log.info("Updating status in C3P-R with the PID...");
+        // TODO: enable later
+//        call.updateStatus(C3PRPubRequestFacade.SUCCESS_STAGE, roPublisher.getRoPid(), identifier);
 
-        log.info("Depositing RO into SDA as a tar archive...");
-        SFTP sftp = new SFTP();
-        sftp.depositFile(rootPath + ".tar");
-        sftp.disconnect();
-
-        log.info("Updating status in C3P-R with the DOI...");
-        call.updateStatus(C3PRPubRequestFacade.SUCCESS_STAGE, doiUrl, identifier);
-
-        FileManager manager = new FileManager();
-        manager.removeTempFile(rootPath + ".tar");
-        manager.removeTempFolder(rootPath);
+//        FileManager manager = new FileManager();
+//        manager.removeTempFile(rootPath + ".tar");
+//        manager.removeTempFolder(rootPath);
     }
 
     private boolean isAlreadyPublished(JSONObject researchObject) {
