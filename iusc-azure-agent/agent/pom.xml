@@ -4,15 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>sda-agent</artifactId>
-    <version>${iu.sead.cloud.version}</version>
-    <name>SDA Agent</name>
+    <artifactId>iusc-azure-agent</artifactId>
+    <version>${iusc.azure.version}</version>
+    <name>IU SEAD Cloud Azure Agent</name>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>org.sead.va</groupId>
-        <artifactId>sda-agent-parent</artifactId>
-        <version>${iu.sead.cloud.version}</version>
+        <artifactId>iusc-azure-agent-parent</artifactId>
+        <version>${iusc.azure.version}</version>
     </parent>
 
     <build>

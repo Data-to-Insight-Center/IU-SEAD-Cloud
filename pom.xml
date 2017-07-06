@@ -5,19 +5,19 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.sead.va</groupId>
-    <artifactId>iu-sead-cloud-parent</artifactId>
-    <version>${iu.sead.cloud.version}</version>
-    <name>IU SEAD Cloud</name>
+    <artifactId>iusc-azure-parent</artifactId>
+    <version>${iusc.azure.version}</version>
+    <name>IU SEAD Cloud - Azure</name>
     <packaging>pom</packaging>
 
 
     <modules>
-        <module>sda-agent</module>
-        <module>iu-sead-cloud-search</module>
+        <module>iusc-azure-agent</module>
+        <module>iusc-azure-search</module>
     </modules>
 
     <properties>
-        <iu.sead.cloud.version>2.0.0-SNAPSHOT</iu.sead.cloud.version>
+        <iusc.azure.version>2.0.0-SNAPSHOT</iusc.azure.version>
         <monitoring.version>2.0.0-SNAPSHOT</monitoring.version>
         <nds.version>0.9-SNAPSHOT</nds.version>
     </properties>

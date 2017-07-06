@@ -3,19 +3,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>sda-landing-page</artifactId>
-    <version>${iu.sead.cloud.version}</version>
-    <name>SDA LandingPage Webapp</name>
+    <artifactId>iusc-azure-landing-page</artifactId>
+    <version>${iusc.azure.version}</version>
+    <name>IU SEAD Cloud Azure LandingPage</name>
     <packaging>war</packaging>
 
     <parent>
         <groupId>org.sead.va</groupId>
-        <artifactId>sda-agent-parent</artifactId>
-        <version>${iu.sead.cloud.version}</version>
+        <artifactId>iusc-azure-agent-parent</artifactId>
+        <version>${iusc.azure.version}</version>
     </parent>
 
     <build>
-        <finalName>landing-page</finalName>
+        <finalName>iusc-azure-landing-page</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
