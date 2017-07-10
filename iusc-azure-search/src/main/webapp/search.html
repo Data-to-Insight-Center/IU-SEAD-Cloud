@@ -213,7 +213,7 @@ function fixAbstract(abstract) {
         </div>
         <div align="right">
             <span class="helper"></span>
-            <a href="http://sead-data.net/" target="_blank"><img align="right" style="width: 364px;height:51px" src="images/sead-logo.png" alt="SEAD"></a>
+            <a href="http://sead-data.net/" target="_blank"><img align="right" style="width: 238px;height:66px" src="images/sead-logo-new.png" alt="SEAD"></a>
         </div>
     </div>
     <div>
@@ -222,19 +222,21 @@ function fixAbstract(abstract) {
         <!--</div>-->
         <!--<div style="float: right; font-size:14px;padding:0px 20px 0px 0px;"><a href="#"> | </a></div>-->
         <div style="float: right; font-size:14px;padding:0px 20px 0px 0px;">
-            <a href="http://sead-data.net/">SEAD</a>
+            <a href="http://sead-data.net/" target="_blank">Learn about SEAD and its publishing services</a>
         </div>
     </div>
     <div style="width:100%;">
         <div id="nav" style="margin-bottom:20px; height:100%">
-            <h4 style="color:#3b5998">Search By Below Options: </h4>
+            <h4 style="color:#3b5998">Search By:</h4>
             <div id="filter"></div>
         </div>
         <div id="middle"></div>
 
         <div id="section">
-            <h2 style="color:#3b5998;padding:10px 0px 0px 0px;"><u>IU SEAD Cloud Azure Search</u></h2>
-            <h3 style="color:#3b5998">Search Results:</h3>
+            <!--<h2 style="color:#3b5998;padding:10px 0px 0px 0px;"><u>IU SEAD Cloud Azure Search</u></h2>-->
+            <h2 style="color:#3b5998;padding:10px 0px 0px 0px;">IU SEAD Cloud</h2>
+            <p style="font-size: medium"><i>Discover Research Objects Published in Azure</i></p>
+            <!--<h3 style="color:#3b5998">Search Results:</h3>-->
             <div id="page_navigation" style="float:right;padding:10px 0px 15px 0px;"></div>
             <input type="hidden" id="current_page"/>
             <input type="hidden" id="show_per_page"/>
@@ -363,10 +365,10 @@ function fixAbstract(abstract) {
 			dateFormat: this.dateFormat,
 			searchClickedCallback: sendToServer,
 			filterParameters: [
-				{type: 'text', attributeName: 'search_content', name: 'Search Across All Fields', placeholder: 'search across all fields', id: 'IFRI', autocomplete: 'on'},
+				{type: 'text', attributeName: 'search_content', name: 'Search Across All Fields', placeholder: 'search across all fields', id: 'Airbox', autocomplete: 'on'},
 				{type: 'text', attributeName: 'creator_name', name: 'Creator Name', placeholder: 'type creator name', id: 'Leslie', autocomplete: 'on'},
 				{type: 'date-range', attributeName: 'date_range', name: 'Publication Date Range'},
-				{type: 'text', attributeName: 'title', name: 'Title', placeholder: 'type title', id: 'Bedrock Strength Measurements', autocomplete: 'on'},
+				{type: 'text', attributeName: 'title', name: 'Title', placeholder: 'type title', id: 'Airbox data for 2017-06-25', autocomplete: 'on'},
 			]
 		};
 	$('#filter').bootstrapFilter(options);
