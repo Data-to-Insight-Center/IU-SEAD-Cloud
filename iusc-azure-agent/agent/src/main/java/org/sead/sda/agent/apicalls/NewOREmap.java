@@ -76,6 +76,7 @@ public class NewOREmap {
 				oneItem.put("Title", list_item.get("Label"));
 				oneItem.put("Link", list_item.get("similarTo"));
 				oneItem.put("FullMetadata", list_item);
+				oneItem.put("HasPartList", part);
 				example.add(oneItem);
 				
 			}

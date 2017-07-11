@@ -50,10 +50,25 @@ public class ROPublisher {
         JSONArray aggre = (JSONArray) newORE.get("aggregates");
 
         UUID roId = UUID.randomUUID();
-        List<String> pidList = download(aggre, this.rootPath, roId);
-        String roDescriptionPath = createRODescription(pidList, originalORE, roId.toString());
+//        List<String> pidList = download(aggre, this.rootPath, roId);
+//        String roDescriptionPath = createRODescription(pidList, originalORE, roId.toString());
+        download(aggre, this.rootPath, roId);
+        // create root pid
+        UUID handleSuffix = UUID.randomUUID();
+        roPid = PropertiesReader.handleURLPrefix + PropertiesReader.handleIdentifierPrefix + handleSuffix;
+        updateOREWithPid(originalORE);
+        // publish the ORE as RO description
+        String roDescriptionPath = createORE(originalORE, roId.toString());
         if (roDescriptionPath != null)
-            roPid = publishFile(roDescriptionPath, roId.toString(), (JSONObject) originalORE.get("describes"));
+            publishFile(roDescriptionPath, roId.toString(), (JSONObject) originalORE.get("describes"), handleSuffix);
+    }
+
+    private void updateOREWithPid(JSONObject originalORE) {
+        JSONObject describes = (JSONObject) originalORE.get("describes");
+        describes.remove("Identifier");
+        describes.put("Identifier", roPid);
+        describes.remove("@id");
+        describes.put("@id", roPid);
     }
 
     private String createRODescription(List<String> pidList, JSONObject originalORE, String roId) {
@@ -74,6 +89,12 @@ public class ROPublisher {
 
         // write description into a local file
         return writeJSONFile(this.rootPath, roId, roDescription);
+    }
+
+    private String createORE(JSONObject originalORE, String roId) {
+        org.json.JSONObject oreJSON = new org.json.JSONObject(originalORE.toJSONString());
+        // write ORE to local filesystem
+        return writeJSONFile(this.rootPath, roId + "-ore", oreJSON);
     }
 
 
@@ -114,7 +135,9 @@ public class ROPublisher {
                 httpDownload.downloadFile(newDownloadPath);
                 errorLinks.addAll(httpDownload.gerErrorLinks());
                 httpDownload.disconnect();
-                String pid = publishFile(newDownloadPath, roId.toString(), (JSONObject) itemNew.get("FullMetadata"));
+                JSONObject fullMetadata = (JSONObject) itemNew.get("FullMetadata");
+                String pid = publishFile(newDownloadPath, roId.toString(), fullMetadata, UUID.randomUUID());
+                updateIdentifier(fullMetadata, (List) itemNew.get("HasPartList"), pid);
                 if (pid != null) // TODO: fail entire RO if one file fails??
                     pidList.add(pid);
             }
@@ -123,7 +146,17 @@ public class ROPublisher {
         return pidList;
     }
 
-    private String publishFile(String filePath, String roId, JSONObject metadata) {
+    private void updateIdentifier(JSONObject metadata, List hasPartList, String pid) {
+        Object oldIdentifier = metadata.get("Identifier");
+        hasPartList.remove(oldIdentifier);
+        metadata.remove("Identifier");
+        metadata.put("Identifier", pid);
+        metadata.remove("@id");
+        metadata.put("@id", pid);
+        hasPartList.add(pid);
+    }
+
+    private String publishFile(String filePath, String roId, JSONObject metadata, UUID handleSuffix) {
         // upload the file into Azure blob first and get the blob URL
         Util.AzureBlobUploadResult uploadResult;
         try {
@@ -139,7 +172,7 @@ public class ROPublisher {
         doProperties.put("creationDate", metadata.get("Creation Date").toString());
         doProperties.put("lastModified", metadata.get("Last Modified").toString());
         // create PID and return
-        return Util.createPIDForDO(doProperties, UUID.randomUUID());
+        return Util.createPIDForDO(doProperties, handleSuffix);
     }
 
     public ArrayList<String> getErrorLinks() {
