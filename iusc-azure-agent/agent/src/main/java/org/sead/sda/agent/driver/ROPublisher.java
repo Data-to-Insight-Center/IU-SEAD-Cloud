@@ -169,8 +169,10 @@ public class ROPublisher {
         Map<String, String> doProperties = new HashMap<String, String>();
         doProperties.put("URL", uploadResult.getBlobURL());
         doProperties.put("etag", uploadResult.getMd5Checksum());
-        doProperties.put("creationDate", metadata.get("Creation Date").toString());
-        doProperties.put("lastModified", metadata.get("Last Modified").toString());
+        if (metadata.get("Creation Date") != null)
+            doProperties.put("creationDate", metadata.get("Creation Date").toString());
+        if (metadata.get("Last Modified") != null)
+            doProperties.put("lastModified", metadata.get("Last Modified").toString());
         // create PID and return
         return Util.createPIDForDO(doProperties, handleSuffix);
     }
