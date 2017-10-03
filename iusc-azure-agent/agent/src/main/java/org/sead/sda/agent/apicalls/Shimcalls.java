@@ -136,8 +136,9 @@ public class Shimcalls {
 		
 		for (Object key : keyList){
 			if (key.toString().matches(keyword)){
-				this.output =  obj.get(key).toString();
-				break;
+                if (!obj.get(key.toString()).toString().equals("http://purl.org/dc/terms/creator")){
+                    this.output =  obj.get(key).toString();
+                    break;}
 			}else if (obj.get(key) instanceof JSONObject){
 				getObjectID((JSONObject) obj.get(key), keyword);
 			} else if (obj.get(key) instanceof JSONArray){
@@ -169,7 +170,6 @@ public class Shimcalls {
     public String getID(){
 		return this.output;
 	}
-	
 
 
 }
