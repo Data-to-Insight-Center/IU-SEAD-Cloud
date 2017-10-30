@@ -32,9 +32,21 @@ public class Util {
         // create a blob client and a blob container using connection string
         CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
         CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
-        CloudBlobContainer container = blobClient.getContainerReference(containerName);
+        File file = new File(filePath);
+        String new_container_name;
+        CloudBlobContainer container = null;
+        if (filePath.contains("copy")){
+            container = blobClient.getContainerReference("airbox-copy-sensordata");
+            String[] paths = file.getParent().split("/");
+            new_container_name = paths[paths.length-1] + "/" + file.getName();
+            //new_container_name = containerName + "/" + file.getName();
+        }else{
+            container = blobClient.getContainerReference(containerName);
+            new_container_name = file.getName();
+        }
+
         // create the container if it doesn't exist
-        if (!container.exists()) {
+        if (null == container || !container.exists()) {
             container.create();
             // set public access for container
             BlobContainerPermissions containerPermissions = new BlobContainerPermissions();
@@ -42,8 +54,7 @@ public class Util {
             container.uploadPermissions(containerPermissions);
         }
 
-        File file = new File(filePath);
-        CloudBlockBlob blob = container.getBlockBlobReference(file.getName());
+        CloudBlockBlob blob = container.getBlockBlobReference(new_container_name);
 
         // while uploading the file into blob storage, we calculate the MD5 checksum as well
         MessageDigest md = MessageDigest.getInstance("MD5");
@@ -57,6 +68,8 @@ public class Util {
         }
 
         return new AzureBlobUploadResult(blob.getUri().toString(), sb.toString());
+
+
     }
 
     /**

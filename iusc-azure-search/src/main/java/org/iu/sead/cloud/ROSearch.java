@@ -165,30 +165,56 @@ public class ROSearch {
                         JSONObject get_child_obj = child_array.getJSONObject(c);
                         String child_pid = get_child_obj.getString("Identifier");
 
-                        String cre_date = output_df.format(sdf1.parse(get_child_obj.getString("Creation Date")));
-                        String last_mod_date = output_df.format(sdf1.parse(get_child_obj.getString("Last Modified")));
-                        String pub_date = output_df.format(sdf2.parse(get_child_obj.getString("Publication Date")));
-                        String dev_id = get_child_obj.getString("device_id");
-                        String dev_name = get_child_obj.getString("device");
-                        String lat = get_child_obj.getString("gps_lat");
-                        String lon = get_child_obj.getString("gps_lon");
-                        int file_size = get_child_obj.getInt("Size");
+                        String project_type = get_child_obj.getString("similarTo");
+                        String[] type = project_type.split("/"); // String array, each element is text between slash
+                        String ptype = type[5];
 
-                        double mb_file_size = file_size/1024;
-                        String new_file_size = Double.toString(mb_file_size)+ " kB";
+                        if (ptype.equals("airbox")) {
 
-                        JSONObject data_set = new JSONObject();
-                        data_set.put("Creation Date", cre_date);
-                        data_set.put("Child PID", child_pid);
-                        data_set.put("Last Modified Date", last_mod_date);
-                        data_set.put("Publication Date", pub_date);
-                        data_set.put("Device Id", dev_id);
-                        data_set.put("Device Name", dev_name);
-                        data_set.put("GPS Latitude", lat);
-                        data_set.put("GPS Longitude", lon);
-                        data_set.put("File Size", new_file_size);
+                            String cre_date = output_df.format(sdf1.parse(get_child_obj.getString("Creation Date")));
+                            String last_mod_date = output_df.format(sdf1.parse(get_child_obj.getString("Last Modified")));
+                            String pub_date = output_df.format(sdf2.parse(get_child_obj.getString("Publication Date")));
+                            String dev_id = get_child_obj.getString("device_id");
+                            String dev_name = get_child_obj.getString("device");
+                            String lat = get_child_obj.getString("gps_lat");
+                            String lon = get_child_obj.getString("gps_lon");
+                            String title = get_child_obj.getString("Title");
+                            int file_size = get_child_obj.getInt("Size");
 
-                        child_pid_arr.put(data_set);
+                            double mb_file_size = file_size / 1024;
+                            String new_file_size = Double.toString(mb_file_size) + " kB";
+
+                            JSONObject data_set = new JSONObject();
+                            data_set.put("Creation Date", cre_date);
+                            data_set.put("Child PID", child_pid);
+                            data_set.put("Last Modified Date", last_mod_date);
+                            data_set.put("Publication Date", pub_date);
+                            data_set.put("Device Id", dev_id);
+                            data_set.put("Device Name", dev_name);
+                            data_set.put("GPS Latitude", lat);
+                            data_set.put("GPS Longitude", lon);
+                            data_set.put("Title", title);
+                            data_set.put("File Size", new_file_size);
+
+                            child_pid_arr.put(data_set);
+                        }else{
+
+                            String cre_date = get_child_obj.getString("Creation Date");
+                            String title = get_child_obj.getString("Title");
+                            int file_size = get_child_obj.getInt("Size");
+
+                            double mb_file_size = file_size / 1024;
+                            String new_file_size = Double.toString(mb_file_size) + " kB";
+
+                            JSONObject data_set = new JSONObject();
+                            data_set.put("Creation Date", cre_date);
+                            data_set.put("Title", title);
+                            data_set.put("Child PID", child_pid);
+                            data_set.put("File Size", new_file_size);
+
+                            child_pid_arr.put(data_set);
+
+                        }
                     }
 
                 } catch (FileNotFoundException e) {
